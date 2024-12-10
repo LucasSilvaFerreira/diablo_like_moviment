@@ -31,11 +31,16 @@ func _ready() -> void:
 
 func _physics_process(delta):
 	if not interrupt_moviment:
-		character_body_3d.velocity.y += gravity * delta
+		
 		if target:
 			character_body_3d.look_at(target, Vector3.UP)
 			character_body_3d.rotation.x = 0
 			character_body_3d.velocity = -character_body_3d.transform.basis.z * speed
+			
+			# Calculate horizontal velocity
+			var horizontal_velocity = -character_body_3d.transform.basis.z * speed
+			character_body_3d.velocity = Vector3(horizontal_velocity.x, character_body_3d.velocity.y, horizontal_velocity.z)
+
 			if character_body_3d.transform.origin.distance_to(target) < tolerance:
 				target = Vector3.ZERO
 				character_body_3d.velocity = Vector3.ZERO
@@ -43,8 +48,9 @@ func _physics_process(delta):
 			else:
 				character_body_3d.animations.play('RUN')
 
-		
-			character_body_3d.move_and_slide()
+	character_body_3d.velocity.y += gravity * delta
+	
+	character_body_3d.move_and_slide()
 			#camera_moviment(camera_3d)
 		
 	
