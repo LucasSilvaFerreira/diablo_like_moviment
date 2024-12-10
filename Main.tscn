@@ -1,0 +1,97 @@
+[gd_scene load_steps=16 format=3 uid="uid://ch7qhywymqhd5"]
+
+[ext_resource type="Script" path="res://components/move_on_click/move_on_click.gd" id="1_5h5v4"]
+[ext_resource type="Script" path="res://components/main_char/main_char.gd" id="1_tfmea"]
+[ext_resource type="PackedScene" uid="uid://d2ucnefguouk8" path="res://components/status/StatusBarComponent.tscn" id="3_qx7s2"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_shhaq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k0pj2"]
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_7lib4"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[sub_resource type="Animation" id="Animation_dey5v"]
+resource_name = "IDLE"
+
+[sub_resource type="Animation" id="Animation_otxoq"]
+resource_name = "RUN"
+
+[sub_resource type="Animation" id="Animation_dx062"]
+resource_name = "ATTACK"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gghiy"]
+_data = {
+&"RUN": SubResource("Animation_otxoq"),
+&"ATTACK": SubResource("Animation_dx062"),
+&"IDLE": SubResource("Animation_dey5v")
+}
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nbpd7"]
+size = Vector3(1, 1.16772, 1.49609)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hiq0r"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xec0g"]
+albedo_color = Color(0.246588, 0.246588, 0.246588, 1)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_vm6w7"]
+viewport_path = NodePath("SubViewPort")
+
+[sub_resource type="Environment" id="Environment_ayj2n"]
+background_mode = 1
+background_color = Color(0.525861, 0.396406, 0.242432, 1)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Plane" type="MeshInstance3D" parent="."]
+transform = Transform3D(2.56167, 0, 0, 0, 2.56167, 0, 0, 0, 2.56167, 0, 0, 0)
+mesh = SubResource("PlaneMesh_shhaq")
+surface_material_override/0 = SubResource("StandardMaterial3D_k0pj2")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Plane"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plane/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_7lib4")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.64679, 0.762668, 0, -0.762668, 0.64679, -0.09, 1.917, 5.003)
+
+[node name="Player_CharacterBody3D" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera_3d", "animations")]
+transform = Transform3D(0.219194, 0, 0, 0, 0.219194, 0, 0, 0, 0.219194, 0, 0.461861, 0)
+script = ExtResource("1_tfmea")
+camera_3d = NodePath("../Camera3D")
+camera_x_offset = 0.0
+camera_z_offset = -2.0
+animations = NodePath("AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player_CharacterBody3D"]
+root_node = NodePath("../CollisionShape3D")
+libraries = {
+&"": SubResource("AnimationLibrary_gghiy")
+}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player_CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0960305, -0.00938082, -0.248047)
+shape = SubResource("BoxShape3D_nbpd7")
+
+[node name="player" type="MeshInstance3D" parent="Player_CharacterBody3D"]
+mesh = SubResource("BoxMesh_hiq0r")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_xec0g")
+
+[node name="MoveOnClick" type="Node" parent="Player_CharacterBody3D/player" node_paths=PackedStringArray("scenario_mesh", "character_body_3d")]
+script = ExtResource("1_5h5v4")
+speed = 7.61
+tolerance = 0.5
+scenario_mesh = NodePath("../../../Plane/StaticBody3D")
+character_body_3d = NodePath("../..")
+
+[node name="StatusBarComponent" parent="Player_CharacterBody3D" instance=ExtResource("3_qx7s2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.48232, 0)
+billboard = 2
+texture = SubResource("ViewportTexture_vm6w7")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ayj2n")

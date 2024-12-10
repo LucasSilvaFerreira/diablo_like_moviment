@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dw3ltrx3up2cp"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_k0vdl"]
+
+[resource]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(31.183, 0, 0, 1)
+albedo_texture = SubResource("CompressedTexture2D_k0vdl")
+uv1_scale = Vector3(0.78, 0.78, 0.78)
